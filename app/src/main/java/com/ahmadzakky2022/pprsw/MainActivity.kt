@@ -1,6 +1,9 @@
 package com.ahmadzakky2022.pprsw
 
 import android.os.Bundle
+import android.os.Build
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.BorderStroke
@@ -62,6 +65,7 @@ private fun PprswDashboard() {
                 .fillMaxSize()
                 .statusBarsPadding()
                 .navigationBarsPadding()
+                .verticalScroll(rememberScrollState())
                 .padding(20.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
@@ -99,10 +103,7 @@ private fun PprswDashboard() {
                 }
             }
 
-            SecurityCard(
-                title = "Device Status",
-                description = "Device security overview"
-            )
+            DeviceStatusCard()
 
             SecurityCard(
                 title = "Security Scan",
@@ -121,7 +122,62 @@ private fun PprswDashboard() {
         }
     }
 }
+@Composable
+private fun DeviceStatusCard() {
+    val manufacturer = Build.MANUFACTURER.ifBlank { "Unknown" }
+    val model = Build.MODEL.ifBlank { "Unknown" }
+    val androidVersion = Build.VERSION.RELEASE.ifBlank { "Unknown" }
+    val apiLevel = Build.VERSION.SDK_INT.toString()
+    val abi = Build.SUPPORTED_ABIS.joinToString(", ").ifBlank { "Unknown" }
 
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = CyberSurface
+        ),
+        border = BorderStroke(
+            width = 1.dp,
+            color = CyberGreen.copy(alpha = 0.22f)
+        )
+    ) {
+        Column(
+            modifier = Modifier.padding(18.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                text = "Device Status",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+                color = CyberGreen
+            )
+
+            DeviceInfo("Manufacturer", manufacturer)
+            DeviceInfo("Model", model)
+            DeviceInfo("Android", androidVersion)
+            DeviceInfo("API Level", apiLevel)
+            DeviceInfo("ABI", abi)
+        }
+    }
+}@Composable
+private fun DeviceInfo(
+    label: String,
+    value: String
+) {
+    Column {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelMedium,
+            color = CyberMuted
+        )
+
+        Text(
+            text = value,
+            style = MaterialTheme.typography.bodyMedium,
+            color = CyberText
+        )
+    }
+}
 @Composable
 private fun SecurityCard(
     title: String,
